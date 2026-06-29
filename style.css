@@ -1,0 +1,361 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    transition: background 0.4s ease;
+}
+
+/* =======================================================
+   🌓 УПРАВЛЕНИЕ ГЛОБАЛЬНЫМИ ТЕМАМИ (ЗАДНИЙ ФОН)
+   ======================================================= */
+/* 1. Твоя прежняя тема (Classic) */
+body.theme-classic { background-color: #020c12; }
+body.theme-classic .tv-container { background: radial-gradient(circle at 50% 50%, #06343e 0%, #031a22 70%, #010b10 100%); }
+
+/* 2. Тема Frutiger Aero (Водно-зеленый сияющий градиент) */
+body.theme-aero { background-color: #01111d; font-family: 'Roboto', sans-serif; }
+body.theme-aero .tv-container { background: radial-gradient(circle at 50% 15%, #0d6ca8 0%, #043859 55%, #011624 100%); }
+
+/* 3. Тема Windows (Metro / Плиточный плоский стиль) */
+body.theme-windows { background-color: #111; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body.theme-windows .tv-container { background: #000000; }
+
+.tv-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transform: scale(0.98);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+    padding: 10px;
+    padding-bottom: 75px; 
+}
+
+.screen.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.main-screen-layout {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+/* =======================================================
+   💎 СТИЛИЗАЦИЯ ПАНЕЛЕЙ (ОБЪЕДИНЕННАЯ)
+   ======================================================= */
+/* Classic */
+body.theme-classic .glass-panel-style {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 255, 234, 0.2);
+    border-radius: 20px;
+}
+/* Frutiger Aero */
+body.theme-aero .glass-panel-style {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.05) 49%, rgba(0, 0, 0, 0.12) 51%, rgba(255, 255, 255, 0.12) 100%);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-top: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 26, 51, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+/* Windows Metro */
+body.theme-windows .glass-panel-style {
+    background: #2b579a; /* Строгий синий цвет плиток Windows */
+    border: none;
+    border-radius: 0px; /* Полное отсутствие скруглений */
+    box-shadow: none;
+}
+
+/* Инфо-панель */
+.info-panel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 6px 12px;
+    height: 60px;
+    transition: all 0.3s ease;
+}
+body.theme-classic .info-panel { background: rgba(0, 0, 0, 0.25); border-radius: 12px; border: 1px solid rgba(0, 255, 234, 0.15); }
+body.theme-windows .info-panel { background: #1e1e1e; border-bottom: 2px solid #2b579a; }
+
+.weather-group { display: flex; align-items: center; gap: 12px; }
+
+/* Кнопка смены темы */
+#theme-toggle { background: none; border: none; font-size: 1.1rem; cursor: pointer; transition: transform 0.2s; }
+#theme-toggle:active { transform: scale(0.85); }
+body.theme-classic #theme-toggle { color: #00ffea; filter: drop-shadow(0 0 3px #00ffea); }
+body.theme-aero #theme-toggle { color: #fff; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.4)); }
+body.theme-windows #theme-toggle { color: #00a2ed; }
+
+/* Погода */
+.weather-widget { color: #fff; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; }
+body.theme-classic .weather-widget i { color: #00ffea; }
+body.theme-aero .weather-widget i { color: #2bf0ff; filter: drop-shadow(0 1px 3px rgba(0,242,255,0.5)); }
+body.theme-windows .weather-widget i { color: #ffffff; }
+
+#weather-temp { font-family: 'Orbitron', sans-serif; font-weight: 700; }
+body.theme-aero #weather-temp { font-family: 'Roboto', sans-serif; font-weight: 500; }
+body.theme-windows #weather-temp { font-family: 'Segoe UI', sans-serif; font-weight: 400; }
+
+/* Спидометр */
+.speedometer-widget {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 65px;
+    height: 65px;
+}
+body.theme-classic .speedometer-widget { background: rgba(0,0,0,0.2); border: 1.5px dashed #00ffea; border-radius: 50%; }
+body.theme-aero .speedometer-widget { 
+    background: radial-gradient(circle at 50% 30%, rgba(40, 220, 255, 0.45) 0%, rgba(3, 49, 79, 0.7) 100%); 
+    border: 2px solid rgba(255, 255, 255, 0.7); border-radius: 50%;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.3);
+}
+body.theme-windows .speedometer-widget { background: #00a2ed; border: none; border-radius: 0px; }
+
+.speed-value { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 700; color: #00ffea; }
+body.theme-aero .speed-value { color: #fff; text-shadow: 0 0 6px rgba(0, 238, 255, 0.8); }
+body.theme-windows .speed-value { color: #fff; font-family: 'Segoe UI', sans-serif; font-weight: 600; }
+
+.speed-unit { font-size: 0.5rem; color: rgba(255,255,255,0.4); margin-top: -2px; }
+body.theme-aero .speed-unit { color: #9be6ff; font-weight: 500; }
+body.theme-windows .speed-unit { color: #fff; text-transform: uppercase; font-size: 0.45rem; }
+
+/* Часы */
+.clock-container { text-align: right; color: #fff; }
+.time { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 700; }
+body.theme-aero .time { font-family: 'Roboto', sans-serif; font-weight: 300; font-size: 1.55rem; }
+body.theme-windows .time { font-family: 'Segoe UI', sans-serif; font-weight: 300; font-size: 1.5rem; }
+
+.ampm { font-size: 0.65rem; color: #00ffea; }
+body.theme-aero .ampm { color: #a6efff; font-weight: 500; }
+body.theme-windows .ampm { color: #ffffff; margin-left: 2px; }
+
+.date { font-size: 0.7rem; color: rgba(255, 255, 255, 0.5); }
+body.theme-aero .date { color: rgba(255,255,255,0.7); }
+body.theme-windows .date { color: #00a2ed; text-transform: lowercase; }
+
+/* Карта */
+.nav-panel-map { width: 100%; flex: 1; overflow: hidden; border-radius: 16px; }
+body.theme-classic .nav-panel-map { border: 2px solid #00ffea; box-shadow: 0 0 10px rgba(0, 255, 234, 0.2); }
+body.theme-aero .nav-panel-map { border: 1px solid rgba(255, 255, 255, 0.4); border-top: 2px solid rgba(255, 255, 255, 0.6); box-shadow: 0 4px 15px rgba(0,0,0,0.25); }
+body.theme-windows .nav-panel-map { border: 2px solid #2b579a; border-radius: 0px; }
+#map { width: 100%; height: 100%; }
+
+/* Мини плеер */
+.mini-player { width: 100%; height: 55px; display: flex; align-items: center; padding: 6px; gap: 10px; }
+body.theme-classic .mini-player { background: rgba(3, 21, 28, 0.85); border: 1px solid rgba(0, 255, 234, 0.3); border-radius: 14px; box-shadow: 0 0 10px rgba(0,255,234,0.1); }
+body.theme-windows .mini-player { background: #1e1e1e; border: none; border-radius: 0px; }
+
+#mini-art { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; }
+body.theme-classic #mini-art { border: 1px solid #00ffea; }
+body.theme-aero #mini-art { border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+body.theme-windows #mini-art { border: none; border-radius: 0px; }
+
+.mini-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.mini-info span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#mini-title { color: #fff; font-size: 0.85rem; font-weight: 500; }
+#mini-artist { font-size: 0.75rem; }
+body.theme-classic #mini-artist { color: #00ffea; }
+body.theme-aero #mini-artist { color: #a2e5ff; }
+body.theme-windows #mini-artist { color: #aaaaaa; }
+
+.mini-controls { display: flex; align-items: center; gap: 14px; padding-right: 5px; }
+.mini-controls button { background: none; border: none; color: #fff; font-size: 1rem; cursor: pointer; }
+body.theme-classic .mini-controls button:active { color: #00ffea; }
+body.theme-windows .mini-controls button { color: #00a2ed; }
+
+/* Плейлист (Song List) */
+.glass-panel { width: 100%; height: 100%; padding: 12px; display: flex; flex-direction: column; }
+.list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 6px; }
+body.theme-classic .list-header { border-bottom: 1px solid rgba(0, 255, 234, 0.15); }
+body.theme-aero .list-header { border-bottom: 1px solid rgba(255, 255, 255, 0.25); }
+body.theme-windows .list-header { border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+
+.panel-title { color: #fff; font-size: 1rem; }
+body.theme-windows .panel-title { font-weight: 300; text-transform: uppercase; letter-spacing: 1px; }
+
+.btn-add-music { padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; cursor: pointer; }
+body.theme-classic .btn-add-music { background: rgba(0, 255, 234, 0.15); border: 1px solid #00ffea; color: #fff; }
+body.theme-aero .btn-add-music { 
+    background: linear-gradient(180deg, #5fc3ff 0%, #007ec7 50%, #005385 100%); 
+    border: 1px solid #004670; border-top: 1px solid #bce6ff; color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25); text-shadow: 0 -1px 0 rgba(0,0,0,0.3); font-weight: 500;
+}
+body.theme-windows .btn-add-music { background: #00a2ed; border: none; border-radius: 0px; color: #fff; font-weight: 600; }
+
+.song-list { width: 100%; overflow-y: auto; list-style: none; flex: 1; }
+.song-item { display: flex; align-items: center; gap: 10px; padding: 6px; color: #fff; margin-bottom: 4px; border-radius: 8px; font-size: 0.85rem; }
+body.theme-classic .song-item { background: rgba(255,255,255,0.02); }
+body.theme-aero .song-item { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 5px; }
+body.theme-windows .song-item { background: #1e1e1e; border-left: 3px solid transparent; border-radius: 0px; margin-bottom: 2px; }
+
+.song-item-art { width: 35px; height: 35px; object-fit: cover; border-radius: 6px; }
+body.theme-windows .song-item-art { border-radius: 0px; }
+
+body.theme-classic .song-item.playing { background: rgba(0, 255, 234, 0.08); border-color: rgba(0, 255, 234, 0.3); }
+body.theme-aero .song-item.playing { background: rgba(255, 255, 255, 0.25); border-color: rgba(255, 255, 255, 0.4); }
+body.theme-windows .song-item.playing { background: #2d2d2d; border-left: 3px solid #00a2ed; }
+
+/* Полный экран музыки */
+.player-panel { justify-content: space-around; align-items: center; }
+.album-art { width: 140px; height: 140px; overflow: hidden; }
+body.theme-classic .album-art { border-radius: 14px; border: 2px solid #00ffea; }
+body.theme-aero .album-art { border-radius: 18px; border: 3px solid rgba(255, 255, 255, 0.6); box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
+body.theme-windows .album-art { border: 2px solid #fff; border-radius: 0px; }
+.album-art img { width: 100%; height: 100%; object-fit: cover; }
+
+.track-info { text-align: center; color: #fff; }
+.track-info h3 { font-size: 1rem; }
+.track-info p { font-size: 0.8rem; }
+body.theme-classic .track-info p { color: #00ffea; }
+body.theme-aero .track-info p { color: #a2e5ff; }
+body.theme-windows .track-info p { color: #dddddd; }
+
+/* Ползунок времени */
+.progress-container { display: flex; width: 100%; align-items: center; font-size: 0.7rem; }
+body.theme-classic .progress-container { color: rgba(255,255,255,0.4); }
+body.theme-aero .progress-container { color: rgba(255,255,255,0.8); }
+body.theme-windows .progress-container { color: #ffffff; font-family: 'Segoe UI', sans-serif; }
+.progress-bar-wrapper { flex: 1; margin: 0 8px; }
+
+.progress-container input[type="range"] { -webkit-appearance: none; width: 100%; height: 3px; outline: none; }
+body.theme-classic .progress-container input[type="range"] { background: rgba(255, 255, 255, 0.1); }
+body.theme-classic .progress-container input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #00ffea; }
+
+body.theme-aero .progress-container input[type="range"] { background: rgba(0, 0, 0, 0.25); height: 5px; border-radius: 3px; }
+body.theme-aero .progress-container input[type="range"]::-webkit-slider-thumb { 
+    -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%; 
+    background: radial-gradient(circle at 30% 30%, #ffffff 0%, #aadeff 30%, #0088cc 85%);
+    border: 1px solid #004466; box-shadow: 0 1px 3px rgba(0,0,0,0.4); cursor: pointer;
+}
+
+body.theme-windows .progress-container input[type="range"] { background: #555555; height: 4px; }
+body.theme-windows .progress-container input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 6px; height: 14px; background: #ffffff; cursor: pointer; }
+
+/* Кнопки управления музыкой */
+.player-controls { display: flex; align-items: center; gap: 20px; }
+.player-controls button { background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; }
+.player-controls .play-pause { display: flex; justify-content: center; align-items: center; }
+
+body.theme-classic .player-controls .play-pause { background: rgba(0, 255, 234, 0.1); width: 45px; height: 45px; border-radius: 50%; border: 1px solid #00ffea; }
+body.theme-aero .player-controls .play-pause { 
+    background: linear-gradient(180deg, #9be8de 0%, #0fa68f 50%, #035c4e 100%); 
+    width: 48px; height: 48px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+body.theme-windows .player-controls .play-pause { background: #ffffff; color: #2b579a; width: 44px; height: 44px; border-radius: 0px; }
+
+/* Нижний навигатор */
+.bottom-nav {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+    width: 94%;
+    max-width: 420px;
+    height: 50px;
+    padding: 1px;
+}
+body.theme-classic .bottom-nav { background: rgba(3, 21, 28, 0.95); border: 1px solid #00ffea; box-shadow: 0 0 15px rgba(0, 255, 234, 0.2); border-radius: 50px;}
+body.theme-aero .bottom-nav { 
+    background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 50%, rgba(0,0,0,0.15) 52%, rgba(255,255,255,0.15) 100%);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.4); border-top: 2px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 25px rgba(0, 20, 40, 0.4); border-radius: 50px;
+}
+body.theme-windows .bottom-nav { background: #1e1e1e; border: none; box-shadow: none; border-radius: 0px; width: 100%; max-width: none; bottom: 0; left: 0; transform: none; height: 55px; }
+
+.nav-item { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 8px; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 0.8rem; font-weight: 500; height: 100%; }
+body.theme-classic .nav-item { border-radius: 40px; }
+body.theme-classic .nav-item.active { color: #fff; background: rgba(0, 255, 234, 0.15); }
+
+body.theme-aero .nav-item { color: rgba(255,255,255,0.85); border-radius: 40px; }
+body.theme-aero .nav-item.active { color: #fff; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.25); }
+
+body.theme-windows .nav-item { color: #ffffff; border-bottom: 3px solid transparent; }
+body.theme-windows .nav-item.active { background: rgba(255, 255, 255, 0.05); border-bottom: 3px solid #00a2ed; color: #00a2ed; }
+
+.nav-divider { width: 1px; height: 12px; }
+body.theme-classic .nav-divider { background: rgba(0, 255, 234, 0.2); }
+body.theme-aero .nav-divider { background: rgba(255, 255, 255, 0.3); }
+body.theme-windows .nav-divider { display: none; } /* В Windows стиле разделители не нужны */
+
+.leaflet-control-attribution { display: none !important; }
+
+/* =======================================================
+   🖥 ЭКРАН ДЛЯ ПК И ПЛАНШЕТОВ
+   ======================================================= */
+@media (min-width: 768px) {
+    .tv-container {
+        max-width: 1024px;
+        max-height: 550px;
+        border-radius: 24px;
+    }
+    body.theme-classic .tv-container { border: 2px solid rgba(0, 255, 234, 0.2); box-shadow: 0 0 40px rgba(0, 0, 0, 0.7); }
+    body.theme-aero .tv-container { border: 2px solid rgba(255, 255, 255, 0.5); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); }
+    body.theme-windows .tv-container { border: 4px solid #1e1e1e; border-radius: 0px; }
+
+    /* Высота контента зафиксирована, нижняя навигация не уплывает */
+    .screen { padding: 20px; padding-bottom: 75px; height: 100%; }
+    body.theme-windows .screen { padding-bottom: 75px; }
+    
+    .main-screen-layout { flex-direction: row; flex-wrap: wrap; height: 100%; }
+
+    .info-panel { width: 35%; height: calc(100% - 65px); flex-direction: column; justify-content: space-around; }
+    body.theme-classic .info-panel { background: transparent; border: none; }
+    body.theme-aero .info-panel { background: transparent; border: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+    body.theme-windows .info-panel { background: #1e1e1e; border: none; }
+
+    .nav-panel-map { width: 63%; height: calc(100% - 65px); }
+    .mini-player { width: 100%; height: 55px; margin-top: 5px; }
+
+    .speedometer-widget { width: 120px; height: 120px; }
+    body.theme-windows .speedometer-widget { width: 100px; height: 100px; }
+    .speed-value { font-size: 3rem; }
+    .time { font-size: 3rem; }
+    .date { font-size: 1rem; }
+    .weather-widget { font-size: 1rem; flex-direction: row; gap: 6px; }
+    .album-art { width: 200px; height: 200px; }
+    .track-info h3 { font-size: 1.3rem; }
+}

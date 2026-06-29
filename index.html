@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CarPlay System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500;700&family=Segoe+UI:wght@300;400;600&display=swap">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-classic">
+
+    <div class="tv-container">
+        
+        <div id="screen-home" class="screen active">
+            <div class="main-screen-layout">
+                
+                <div class="info-panel glass-panel-style">
+                    <div class="weather-group">
+                        <div class="weather-widget">
+                            <span><i class="fa-solid fa-satellite-dish"></i></span>
+                            <span id="weather-temp">--°C</span>
+                        </div>
+                        <button id="theme-toggle" title="Сменить тему"><i class="fa-solid fa-palette"></i></button>
+                    </div>
+
+                    <div class="speedometer-widget">
+                        <div class="speed-value" id="speed-num">0</div>
+                        <div class="speed-unit">km/h</div>
+                    </div>
+
+                    <div class="clock-container">
+                        <div id="time" class="time">00:00 <span class="ampm">PM</span></div>
+                        <div id="date" class="date">Загрузка...</div>
+                    </div>
+                </div>
+
+                <div class="nav-panel-map">
+                    <div id="map"></div>
+                </div>
+
+                <div class="mini-player glass-panel-style" id="mini-player-home">
+                    <img id="mini-art" src="https://via.placeholder.com/50/0a4e5c/ffffff?text=No+Art" alt="Art">
+                    <div class="mini-info">
+                        <span id="mini-title">Трек не выбран</span>
+                        <span id="mini-artist">Вкладка List -> Добавить</span>
+                    </div>
+                    <div class="mini-controls">
+                        <button id="mini-prev"><i class="fa-solid fa-backward"></i></button>
+                        <button id="mini-play"><i class="fa-solid fa-play"></i></button>
+                        <button id="mini-next"><i class="fa-solid fa-forward"></i></button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <div id="screen-list" class="screen">
+            <div class="glass-panel list-panel glass-panel-style">
+                <div class="list-header">
+                    <h2 class="panel-title">Song List <span class="count" id="song-count">(0)</span></h2>
+                    <label for="file-upload" class="btn-add-music">
+                        <i class="fa-solid fa-plus"></i> Добавить
+                    </label>
+                    <input type="file" id="file-upload" multiple accept="audio/*" style="display: none;">
+                </div>
+                <ul class="song-list" id="playlist-tracks"></ul>
+            </div>
+        </div>
+
+        <div id="screen-player" class="screen">
+            <div class="glass-panel player-panel glass-panel-style">
+                <div class="album-art">
+                    <img id="track-art" src="https://via.placeholder.com/250/0a4e5c/ffffff?text=No+Art" alt="Обложка">
+                </div>
+                
+                <div class="track-info">
+                    <h3 id="track-title">Выберите трек</h3>
+                    <p id="track-artist">Добавьте аудио во вкладке List</p>
+                </div>
+
+                <div class="progress-container">
+                    <span id="current-time" class="time-stamp">0:00</span>
+                    <div class="progress-bar-wrapper">
+                        <input type="range" id="progress-range" min="0" max="100" value="0">
+                    </div>
+                    <span id="total-duration" class="time-stamp">0:00</span>
+                </div>
+
+                <div class="player-controls">
+                    <button id="btn-prev" class="btn-main"><i class="fa-solid fa-backward-step"></i></button>
+                    <button id="btn-play" class="btn-main play-pause"><i class="fa-solid fa-play"></i></button>
+                    <button id="btn-next" class="btn-main"><i class="fa-solid fa-forward-step"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" data-target="screen-home">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-divider"></div>
+            <div class="nav-item" data-target="screen-list">
+                <i class="fa-solid fa-list"></i>
+                <span>List</span>
+            </div>
+            <div class="nav-divider"></div>
+            <div class="nav-item" data-target="screen-player">
+                <i class="fa-solid fa-music"></i>
+                <span>Music</span>
+            </div>
+        </nav>
+
+    </div>
+
+    <audio id="audio-player"></audio>
+    <script src="script.js"></script>
+</body>
+</html>
