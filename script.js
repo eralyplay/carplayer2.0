@@ -15,18 +15,6 @@ const speedNumEl = document.getElementById('speed-num');
 const fileUpload = document.getElementById('file-upload');
 const playlistTracks = document.getElementById('playlist-tracks');
 const songCountEl = document.getElementById('song-count');
-const themeToggleBtn = document.getElementById('theme-toggle');
-
-// Список доступных классов тем оформления
-const themes = ['theme-classic', 'theme-aero', 'theme-windows'];
-let currentThemeIndex = 0;
-
-// Циклическое переключение тем (Classic -> Aero -> Windows)
-themeToggleBtn.addEventListener('click', () => {
-    document.body.classList.remove(themes[currentThemeIndex]);
-    currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-    document.body.classList.add(themes[currentThemeIndex]);
-});
 
 // Переключение экранов
 document.querySelectorAll('.nav-item').forEach(navItem => {
@@ -107,7 +95,7 @@ function addTrackToSystem(track) {
     const index = songsList.length - 1;
     const li = document.createElement('li');
     li.classList.add('song-item');
-    li.innerHTML = `<img class="song-item-art" src="${track.art}"><div><div>${track.title}</div><small class="track-artist-text">${track.artist}</small></div>`;
+    li.innerHTML = `<img class="song-item-art" src="${track.art}"><div><div>${track.title}</div><small style="color:var(--accent)">${track.artist}</small></div>`;
     li.addEventListener('click', () => { songIndex = index; loadSong(songsList[songIndex]); isPlaying = false; togglePlay(); });
     playlistTracks.appendChild(li);
     if (songsList.length === 1) loadSong(songsList[0]);
@@ -124,11 +112,6 @@ function loadSong(song) {
     document.getElementById('mini-art').src = song.art;
 
     audio.src = song.src;
-    
-    document.querySelectorAll('.song-item').forEach((item, idx) => {
-        if(idx === songIndex) item.classList.add('playing');
-        else item.classList.remove('playing');
-    });
 }
 
 function togglePlay() {
@@ -145,8 +128,8 @@ function togglePlay() {
     isPlaying = !isPlaying;
 }
 
-function nextSong() { songIndex = (songIndex + 1) % songsList.length; loadSong(songsList[songIndex]); if (isPlaying) audio.play().catch(() => {}); }
-function prevSong() { songIndex = (songIndex - 1 + songsList.length) % songsList.length; loadSong(songsList[songIndex]); if (isPlaying) audio.play().catch(() => {}); }
+function nextSong() { songIndex = (songIndex + 1) % songsList.length; loadSong(songsList[songIndex]); if (isPlaying) audio.play(); }
+function prevSong() { songIndex = (songIndex - 1 + songsList.length) % songsList.length; loadSong(songsList[songIndex]); if (isPlaying) audio.play(); }
 
 audio.addEventListener('timeupdate', (e) => {
     const { duration, currentTime } = e.srcElement;
@@ -166,3 +149,15 @@ document.getElementById('mini-next').addEventListener('click', nextSong);
 document.getElementById('btn-prev').addEventListener('click', prevSong);
 document.getElementById('mini-prev').addEventListener('click', prevSong);
 audio.addEventListener('ended', nextSong);
+
+// --- ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ТЕМ ОФОРМЛЕНИЯ ---
+const themes = ['theme-neon', 'theme-frutiger', 'theme-windows'];
+let currentThemeIndex = 0;
+
+function toggleSystemTheme() {
+    const container = document.getElementById('main-container');
+    container.classList.remove(themes[currentThemeIndex]);
+    
+    currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+    container.classList.add(themes[currentThemeIndex]);
+}
