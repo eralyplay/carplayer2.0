@@ -15,6 +15,18 @@ const speedNumEl = document.getElementById('speed-num');
 const fileUpload = document.getElementById('file-upload');
 const playlistTracks = document.getElementById('playlist-tracks');
 const songCountEl = document.getElementById('song-count');
+const themeToggleBtn = document.getElementById('theme-toggle');
+
+// Список доступных классов тем оформления
+const themes = ['theme-classic', 'theme-aero', 'theme-windows'];
+let currentThemeIndex = 0;
+
+// Циклическое переключение тем (Classic -> Aero -> Windows)
+themeToggleBtn.addEventListener('click', () => {
+    document.body.classList.remove(themes[currentThemeIndex]);
+    currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+    document.body.classList.add(themes[currentThemeIndex]);
+});
 
 // Переключение экранов
 document.querySelectorAll('.nav-item').forEach(navItem => {
@@ -66,9 +78,17 @@ function initGpsSystem() {
 initGpsSystem();
 setInterval(() => { speedNumEl.innerText = realGpsSpeed; }, 250);
 
-// Загрузка музыки
+// Исправлено под iOS: Загрузка музыки с мягкой проверкой типов
 fileUpload.addEventListener('change', (e) => {
     Array.from(e.target.files).forEach(file => {
+        const fileName = file.name.toLowerCase();
+        
+        // Если это видеофайл, пропускаем его, чтобы не ломать аудиоплеер
+        if (file.type.startsWith('video/') || fileName.endsWith('.mp4') || fileName.endsWith('.mov') || fileName.endsWith('.avi')) {
+            alert(`Файл "${file.name}" является видео. Пожалуйста, выбирайте только аудиоформаты.`);
+            return;
+        }
+
         const blobUrl = URL.createObjectURL(file);
         const trackData = { title: file.name.replace(/\.[^/.]+$/, ""), artist: "Неизвестен", src: blobUrl, art: "https://via.placeholder.com/250/0a4e5c/ffffff?text=No+Art" };
 
@@ -87,6 +107,8 @@ fileUpload.addEventListener('change', (e) => {
             onError: function() { addTrackToSystem(trackData); }
         });
     });
+    // Очищаем значение, чтобы можно было выбирать файлы повторно
+    fileUpload.value = '';
 });
 
 function addTrackToSystem(track) {
@@ -95,7 +117,7 @@ function addTrackToSystem(track) {
     const index = songsList.length - 1;
     const li = document.createElement('li');
     li.classList.add('song-item');
-    li.innerHTML = `<img class="song-item-art" src="${track.art}"><div><div>${track.title}</div><small style="color:var(--accent)">${track.artist}</small></div>`;
+    li.innerHTML = `<img class="song-item-art" src="${track.art}"><div><div>${track.title}</div><small class="track-artist-text">${track.artist}</small></div>`;
     li.addEventListener('click', () => { songIndex = index; loadSong(songsList[songIndex]); isPlaying = false; togglePlay(); });
     playlistTracks.appendChild(li);
     if (songsList.length === 1) loadSong(songsList[0]);
@@ -112,6 +134,11 @@ function loadSong(song) {
     document.getElementById('mini-art').src = song.art;
 
     audio.src = song.src;
+    
+    document.querySelectorAll('.song-item').forEach((item, idx) => {
+        if(idx === songIndex) item.classList.add('playing');
+        else item.classList.remove('playing');
+    });
 }
 
 function togglePlay() {
@@ -128,8 +155,9 @@ function togglePlay() {
     isPlaying = !isPlaying;
 }
 
-function nextSong() { songIndex = (songIndex + 1) % songsList.length; loadSong(songsList[songIndex]); if (isPlaying) audio.play(); }
-function prevSong() { songIndex = (songIndex - 1 + songsList.length) % songsList.length; loadSong(songsList[songIndex]); if (isPlaying) audio.play(); }
+// Исправлено под iOS: Принудительный .play() внутри событий смены треков
+function nextSong() { songIndex = (songIndex + 1) % songsList.length; loadSong(songsList[songIndex]); if (isPlaying) audio.play().catch(() => {}); }
+function prevSong() { songIndex = (songIndex - 1 + songsList.length) % songsList.length; loadSong(songsList[songIndex]); if (isPlaying) audio.play().catch(() => {}); }
 
 audio.addEventListener('timeupdate', (e) => {
     const { duration, currentTime } = e.srcElement;
@@ -149,15 +177,3 @@ document.getElementById('mini-next').addEventListener('click', nextSong);
 document.getElementById('btn-prev').addEventListener('click', prevSong);
 document.getElementById('mini-prev').addEventListener('click', prevSong);
 audio.addEventListener('ended', nextSong);
-
-// --- ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ТЕМ ОФОРМЛЕНИЯ ---
-const themes = ['theme-neon', 'theme-frutiger', 'theme-windows'];
-let currentThemeIndex = 0;
-
-function toggleSystemTheme() {
-    const container = document.getElementById('main-container');
-    container.classList.remove(themes[currentThemeIndex]);
-    
-    currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-    container.classList.add(themes[currentThemeIndex]);
-}
